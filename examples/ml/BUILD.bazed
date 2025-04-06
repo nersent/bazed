@@ -1,0 +1,58 @@
+pythonEntry("dataset", {
+  srcs: ["data_proc.py"],
+  // Our data_proc.py script produces a dataset folder,
+  // which we want to use it later as a dependency in our 
+  // ML pipeline.
+  outputs: ["dataset"],
+  // By default, run mode is set to true, which means
+  // a target is not being cached and is only ran in "run" mode.
+  // We want to make it as part of the build process,
+  // thus cached.
+  run: false,
+  // Enable live output in the terminal.
+  io: true,
+  main: "data_proc.py",
+});
+
+fileSet("model_src", {
+  srcs: [
+    "model.py",
+    "attention.py",
+    "rotary.py",
+    "mlp.py",
+  ],
+})
+
+pythonEntry("train", {
+  srcs: [
+    "train.py",
+    "dataset.py"
+  ],
+  deps: [
+    // We reference the :dataset target here, which will
+    // symlink over the dataset folder we generated earlier.
+    ":dataset",
+    ":model_src",
+  ],
+  // The output of our training script is a model file.
+  outputs: ["model.pt"],
+  // Same as above; training is part of our build process.
+  // We don't want to run it every time we build.
+  run: false,
+  io: true,
+  main: "train.py",
+});
+
+pythonEntry("eval", {
+  srcs: [
+    "eval.py"
+  ],
+  deps: [
+    ":model_src",
+    ":train",
+  ],
+  main: "eval.py",
+  // This time, we want to run the evaluation script in "run" mode,
+  // i.e every time we run it through Bazed.
+  run: true,
+})
