@@ -1,0 +1,4 @@
+tsLibrary("common", {
+  srcs: [glob("**/!(*.test).ts")],
+  compiler: "tsc",
+});

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package micro;
+
+service MicroApi {
+  rpc Get(GetRequest) returns (GetResponse);
+}
+
+message GetRequest {
+  string message = 1;
+}
+
+message GetResponse {
+  string message = 1;
+}

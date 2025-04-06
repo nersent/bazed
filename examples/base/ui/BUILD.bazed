@@ -1,0 +1,4 @@
+tsLibrary("ui", {
+  srcs: [glob("**/!(*.test).{ts,tsx}")],
+  // compiler: "tsc",
+});

@@ -1,0 +1,45 @@
+const { resolve } = require("path");
+
+fileSet("src", {
+  srcs: [glob("src/**/*.{ts,tsx}"), glob("public/**/*")],
+  deps: ["//base/js", "//base/ui", "//platform/common"],
+});
+
+env("env", {
+  file: ".env",
+});
+
+nextJs("website", {
+  deps: [":src", ":env"],
+  publicEnvs: ["API_URL"],
+});
+
+const TAG = `registry.gitlab.com/nersent/bazed/platform-website:0.0.1`;
+
+execute("docker_image", (ctx) => {
+  return {
+    command: `docker build -t ${TAG} -f ./platform/website/.dockerfile .`,
+    srcs: [".dockerfile"],
+    deps: [":website", "//:pnpm_lock"],
+    copyDeps: true,
+    io: true,
+    cwd: resolve(ctx.sandboxPath),
+  };
+});
+
+execute("docker_publish", (ctx) => {
+  return {
+    command: `docker push ${TAG}`,
+    deps: [":docker_image"],
+    io: true,
+    cwd: resolve(ctx.sandboxPath),
+  };
+});
+
+execute("docker_run", (ctx) => {
+  return {
+    command: `docker run -it -p 8080:80 ${TAG}`,
+    io: true,
+    cwd: resolve(ctx.sandboxPath),
+  };
+});

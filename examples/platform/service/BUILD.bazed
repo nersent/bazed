@@ -1,0 +1,19 @@
+tsLibrary("src", {
+  srcs: [glob("**/!(*.test).ts")],
+  deps: [
+    "//base/js",
+    "//base/node",
+    "//base/nest",
+    "//platform/common",
+    "//platform/micro/proto:js",
+  ],
+});
+
+env("env", {
+  file: ".env",
+});
+
+nodeEntry("service", {
+  main: "main.js",
+  deps: [":src", ":env"],
+});

@@ -1,0 +1,27 @@
+const RS_WORKSPACE = ["cs"];
+
+rustFileSet("rs_src", {
+  srcs: glob("**/*.rs"),
+});
+
+maturin("rs_py", {
+  deps: [":rs_src"],
+  scope: "cs_lib",
+  workspace: RS_WORKSPACE,
+  args: `--interpreter python3.10 --release --skip-auditwheel`,
+});
+
+fileSet("py_src", {
+  srcs: glob("**/*.py"),
+  deps: [":rs_py"],
+});
+
+pythonEntry("chart", {
+  main: "chart.py",
+  deps: [":py_src"],
+});
+
+pythonEntry("labels", {
+  main: "labels.py",
+  deps: [":py_src"],
+});

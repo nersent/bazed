@@ -1,0 +1,9 @@
+execute("lint", (ctx) => ({
+  command: ["eslint . --fix", `cargo check`, `cargo fmt -- --check`].join("&&"),
+  cwd: ctx.workspacePath,
+  run: true,
+}));
+
+fileSet("pnpm_lock", {
+  srcs: ["package.json", "pnpm-lock.yaml"],
+});

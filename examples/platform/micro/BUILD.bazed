@@ -1,0 +1,13 @@
+env("env", {
+  file: ".env",
+});
+
+fileSet("py_src", {
+  srcs: glob("**/*.py"),
+  deps: ["//platform/micro/proto:py"],
+});
+
+pythonEntry("micro", {
+  main: "main.py",
+  deps: [":py_src", ":env"],
+});
